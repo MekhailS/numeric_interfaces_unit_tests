@@ -12,11 +12,15 @@ SET(TEST_SRC
 
 add_executable(Google_Tests_run ${TEST_SRC})
 
-# PLACE STATIC LIBRARY IN 'libs_for_testing' FOLDER AS 'vector_lib.a'
+unset(LIB CACHE)
+# PLACE STATIC LIBRARY IN 'libs_for_testing' FOLDER AS 'vector_lib_tested.a'
 find_library(LIB
-        NAMES vector_lib
+        NAMES vector_lib_tested
         HINTS ../libs_for_testing)
+
+MESSAGE(STATUS "${LIB}")
 
 target_link_libraries(Google_Tests_run ${LIB})
 
 target_link_libraries(Google_Tests_run gtest gtest_main)
+
