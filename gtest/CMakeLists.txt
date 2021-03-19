@@ -21,7 +21,7 @@ add_executable(Google_Tests_run ${TEST_SRC})
 unset(LIB CACHE)
 # PLACE STATIC LIBRARY IN 'libs_for_testing' FOLDER AS 'vector_lib_tested.a'
 find_library(LIB
-        NAMES libvectorlib
+        NAMES vector_tested
         HINTS ../libs_for_testing)
 
 MESSAGE(STATUS "${LIB}")

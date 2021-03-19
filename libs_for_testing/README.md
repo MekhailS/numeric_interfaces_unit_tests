@@ -1,0 +1,1 @@
+## Place here lib for testing named as 'vector_tested.a'
