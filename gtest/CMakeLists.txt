@@ -8,6 +8,7 @@ include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
 SET(TEST_SRC
         mekhail_test.cpp
+        victor_test.cpp
         )
 
 add_executable(Google_Tests_run ${TEST_SRC})
