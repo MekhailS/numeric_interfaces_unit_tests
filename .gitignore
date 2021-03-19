@@ -3,5 +3,5 @@
 /src/
 /libs_for_testing/
 
-!README.md
-!*/
+!/src/README.md
+!/libs_for_testing/README.md
