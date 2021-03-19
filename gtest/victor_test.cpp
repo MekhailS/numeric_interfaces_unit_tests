@@ -4,10 +4,15 @@
 
 #include "gtest/gtest.h"
 
+
+
+#define VECTOR_IMPLEMENTATION_NAME VectorImpl
+
 #include "../include/IVector.h"
 #include "../include/ILogger.h"
 #include "../src/VectorImpl.cpp"
 #include <cmath>
+
 
 class setLogger: public ::testing::Test
 {
@@ -80,12 +85,12 @@ TEST_F(moveInstance, moveInstanceVecDim5WithIntersection_SuccMove) {
     double data5[5] = {1, 2, 3, 4, 5};
     vecDim5 = IVector::createVector(5, data5);
     size_t dimBeforeMove = 5;
-    size_t sizeAllocatedBeforeMove = sizeof(VectorImpl) + dimBeforeMove * sizeof(double);
+    size_t sizeAllocatedBeforeMove = sizeof(VECTOR_IMPLEMENTATION_NAME) + dimBeforeMove * sizeof(double);
 
     uint8_t * buffer = new (std::nothrow)uint8_t[2*(sizeAllocatedBeforeMove)];
     IVector::copyInstance((IVector*)buffer, vecDim5);
 
-    IVector* dst = new (buffer + 3) VectorImpl(dimBeforeMove);
+    IVector* dst = new (buffer + 3) VECTOR_IMPLEMENTATION_NAME(dimBeforeMove);
 
     RC error = IVector::moveInstance(dst, vecDim5);
 
@@ -128,7 +133,7 @@ TEST_F(moveInstance, dstIsNullptr_FailMove) {
 }
 
 TEST_F(moveInstance, srcIsNullptr_FailMove) {
-    size_t sizeAllocatedBeforeMove = sizeof(VectorImpl) * 5 * sizeof(double);
+    size_t sizeAllocatedBeforeMove = sizeof(VECTOR_IMPLEMENTATION_NAME) * 5 * sizeof(double);
 
     IVector* dst = (IVector*)new uint8_t[sizeAllocatedBeforeMove];
 
@@ -313,7 +318,7 @@ TEST_F(sizeAllocated, sizeAllocatedOfElems5_SuccGet) {
     size_t sizeData = 5;
     IVector* vecDim5 = IVector::createVector(sizeData, data5);
 
-    ASSERT_EQ(vecDim5->sizeAllocated(), sizeof(VectorImpl) + sizeData * sizeof(double));
+    ASSERT_EQ(vecDim5->sizeAllocated(), sizeof(VECTOR_IMPLEMENTATION_NAME) + sizeData * sizeof(double));
 }
 
 
@@ -322,7 +327,7 @@ TEST_F(sizeAllocated, sizeAllocatedOfElems1_SuccGet) {
     size_t sizeData = 1;
     IVector* vecDim1 = IVector::createVector(sizeData, data1);
 
-    ASSERT_EQ(vecDim1->sizeAllocated(), sizeof(VectorImpl) + sizeData * sizeof(double));
+    ASSERT_EQ(vecDim1->sizeAllocated(), sizeof(VECTOR_IMPLEMENTATION_NAME) + sizeData * sizeof(double));
 }
 
 //--------------------------------------------test_add_function--------------------------------------------

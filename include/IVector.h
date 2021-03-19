@@ -13,13 +13,13 @@
 class IVector {
 public:
     enum class NORM {
-        INFINITE,
+        CHEBYSHEV, // Renamed INFINITE, previous name was colliding with windows.h macros
         FIRST,
         SECOND,
         AMOUNT
     };
 
-    static IVector* createVector(size_t dim, double const* const& ptr_data); // tested
+    static IVector* createVector(size_t dim, double const* const& ptr_data);
     static RC copyInstance(IVector* const dest, IVector const* const& src);
     static RC moveInstance(IVector* const dest, IVector*& src);
 
@@ -28,10 +28,10 @@ public:
 
     static RC setLogger(ILogger* const logger);
 
-    virtual RC getCord(size_t index, double& val) const = 0; //tested
-    virtual RC setCord(size_t index, double val) = 0; //tested
+    virtual RC getCord(size_t index, double& val) const = 0;
+    virtual RC setCord(size_t index, double val) = 0;
     virtual RC scale(double multiplier) = 0;
-    virtual size_t getDim() const = 0; //tested
+    virtual size_t getDim() const = 0;
 
     virtual RC inc(IVector const* const& op) = 0;
     virtual RC dec(IVector const* const& op) = 0;
