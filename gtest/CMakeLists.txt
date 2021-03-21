@@ -14,7 +14,7 @@ include_directories(
 SET(TEST_SRC
         mekhail_test.cpp
         victor_test.cpp
-        )
+        danil_test.cpp)
 
 add_executable(Google_Tests_run ${TEST_SRC})
 
