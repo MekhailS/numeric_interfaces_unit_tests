@@ -7,6 +7,7 @@
 #include "IVector.h"
 #include "VectorImpl.cpp"
 #include <limits>
+#include <numeric>
 
 
 class getData : public ::testing::Test {
@@ -35,171 +36,157 @@ TEST_F(getData, GetingDataWith5Elements_SuccGet) {
 class inc : public ::testing::Test {
 public:
     virtual void SetUp() {
-        firstVec = IVector::createVector(5, data1);
+        logger = ILogger::createLogger("log1.txt");
+        IVector::setLogger(logger);
+        Vec5 = IVector::createVector(5, dataVec5);
+        AnotherVec5 = IVector::createVector(5, dataAnotherVec5);
+        Vec1 = IVector::createVector(1, dataVec1);
     }
 
     virtual void TearDown() {
-        delete firstVec;
+        delete Vec5;
+        delete Vec1;
+        delete AnotherVec5;
+        delete logger;
     }
 
-    bool hasFirstVectorChanged() {
-        double const *outputData = firstVec->getData();
+    bool hasDefaultVec5Changed() {
+        double const *outputData = Vec5->getData();
         for (int i = 0; i < 5; i++) {
-            if (outputData[i] != data1[i])
+            if (outputData[i] != dataVec5[i])
                 return true;
         }
         return false;
     }
 
+    ILogger* logger = nullptr;
+    double dataVec5[5] = {4, 3, 3, 4, 5};
+    double dataAnotherVec5[5] = {3, 2, 8, 6, 3};
+    double dataVec1[1] = {1};
 
-    double data1[5] = {4, 3, 3, 4, 5};
-
-    IVector *firstVec;
+    IVector* Vec5;
+    IVector* AnotherVec5;
+    IVector* Vec1;
 };
 
 TEST_F(inc, IncTwoVectorsSecondIsNullptr_ReturnNotSuccessRC) {
-    RC rc = firstVec->inc(nullptr);
+    RC rc = Vec5->inc(nullptr);
     ASSERT_NE(rc, RC::SUCCESS);
 }
 
 TEST_F(inc, IncTwoVectorsWithEqualDim_SuccInc) {
-    double data2[5] = {3, 9, 2, 8, 1};
-    IVector *secondVec = IVector::createVector(5, data2);
-
-    RC rc = firstVec->inc(secondVec);
+    RC rc = Vec5->inc(AnotherVec5);
     ASSERT_EQ(rc, RC::SUCCESS);
 
-    double const *outputData = firstVec->getData();
+    double const *outputData = Vec5->getData();
     for (int i = 0; i < 5; i++) {
-        ASSERT_NE(outputData[i], std::numeric_limits<double>::infinity());
-        ASSERT_NE(outputData[i], std::numeric_limits<double>::quiet_NaN());
-        ASSERT_EQ(outputData[i], data1[i] + data2[i]);
+        ASSERT_TRUE(std::isfinite(outputData[i]));
     }
 
-    delete secondVec;
 }
 
 TEST_F(inc, IncTwoVectorsWithNonEqualDim_ReturnNotSuccessRC) {
-    double data2[4] = {1, 2, 3, 4};
-    IVector *secondVec = IVector::createVector(4, data2);
-
-    RC rc = firstVec->inc(secondVec);
+    RC rc = Vec5->inc(Vec1);
     ASSERT_NE(rc, RC::SUCCESS);
 
-    ASSERT_FALSE(hasFirstVectorChanged());
-
-    delete secondVec;
+    ASSERT_FALSE(hasDefaultVec5Changed());
 }
 
 
 
-TEST_F(inc, IncTwoVectorsFirstElemIsInfinity_ReturnNotSuccessRCAndUnchangedFirstVector) {
-    double data2[5] = {std::numeric_limits<double>::infinity() - 1, 2, 3, 4, 3};
-    IVector *secondVec = IVector::createVector(5, data2);
+TEST_F(inc, IncTwoVectorsOneElemIsNearInfinity_ReturnNotSuccessRCAndUnchangedVector) {
+    auto nearInf = std::numeric_limits<double>::max();
 
-    RC rc = firstVec->inc(secondVec);
+    size_t idx = 2;
+    dataVec5[idx] = nearInf;
+    dataAnotherVec5[idx] = nearInf;
+    Vec5->setCord(idx, nearInf);
+    AnotherVec5->setCord(idx, nearInf);
+
+
+    RC rc = Vec5->inc(AnotherVec5);
     ASSERT_NE(rc, RC::SUCCESS);
 
-    ASSERT_FALSE(hasFirstVectorChanged());
-    delete secondVec;
-}
-
-TEST_F(inc, IncTwoVectorsLastElemIsInfinity_ReturnNotSuccessRCAndUnchangedFirstVector) {
-    double data2[5] = {1, 2, 3, 4, std::numeric_limits<double>::infinity() - 1};
-    IVector *secondVec = IVector::createVector(5, data2);
-
-    RC rc = firstVec->inc(secondVec);
-    ASSERT_NE(rc, RC::SUCCESS);
-
-    ASSERT_FALSE(hasFirstVectorChanged());
-
-    delete secondVec;
+    ASSERT_FALSE(hasDefaultVec5Changed());
 }
 
 
 class dec : public ::testing::Test {
 public:
     virtual void SetUp() {
-        firstVec = IVector::createVector(5, data1);
+        logger = ILogger::createLogger("log1.txt");
+        IVector::setLogger(logger);
+        Vec5 = IVector::createVector(5, dataVec5);
+        AnotherVec5 = IVector::createVector(5, dataAnotherVec5);
+        Vec1 = IVector::createVector(1, dataVec1);
     }
 
     virtual void TearDown() {
-        delete firstVec;
+        delete Vec5;
+        delete Vec1;
+        delete AnotherVec5;
+        delete logger;
     }
 
-    bool hasFirstVectorChanged() {
-        double const *outputData = firstVec->getData();
+    bool hasDefaultVec5Changed() {
+        double const *outputData = Vec5->getData();
         for (int i = 0; i < 5; i++) {
-            if (outputData[i] != data1[i])
+            if (outputData[i] != dataVec5[i])
                 return true;
         }
         return false;
     }
 
+    ILogger* logger = nullptr;
+    double dataVec5[5] = {4, 3, 3, 4, 5};
+    double dataAnotherVec5[5] = {3, 2, 8, 6, 3};
+    double dataVec1[1] = {1};
 
-    double data1[5] = {1, 2, 3, 4, 5};
-
-    IVector *firstVec;
+    IVector* Vec5;
+    IVector* AnotherVec5;
+    IVector* Vec1;
 };
 
 TEST_F(dec, DecTwoVectorsSecondIsNullptr_ReturnNotSuccessRC) {
-    RC rc = firstVec->dec(nullptr);
+    RC rc = Vec5->dec(nullptr);
     ASSERT_NE(rc, RC::SUCCESS);
 }
 
 TEST_F(dec, DecTwoVectorsWithEqualDim_SuccDec) {
-    double data2[5] = {3, 9, 2, 8, 1};
-    IVector *secondVec = IVector::createVector(5, data2);
-
-    RC rc = firstVec->dec(secondVec);
+    RC rc = Vec5->dec(AnotherVec5);
     ASSERT_EQ(rc, RC::SUCCESS);
 
-    double const *outputData = firstVec->getData();
+    double const *outputData = Vec5->getData();
     for (int i = 0; i < 5; i++) {
-        ASSERT_FALSE(std::isnan(outputData[i]));
-        ASSERT_TRUE(outputData[i] > -std::numeric_limits<double>::infinity() ||
-                     outputData[i] < std::numeric_limits<double>::infinity());
-        ASSERT_EQ(outputData[i], data1[i] - data2[i]);
+        ASSERT_TRUE(std::isfinite(outputData[i]));
     }
 
-    delete secondVec;
 }
 
 TEST_F(dec, DecTwoVectorsWithNonEqualDim_ReturnNotSuccessRC) {
-    double data2[4] = {1, 2, 3, 4};
-    IVector *secondVec = IVector::createVector(4, data2);
-
-    RC rc = firstVec->dec(secondVec);
+    RC rc = Vec5->dec(Vec1);
     ASSERT_NE(rc, RC::SUCCESS);
 
-    ASSERT_FALSE(hasFirstVectorChanged());
-
-    delete secondVec;
+    ASSERT_FALSE(hasDefaultVec5Changed());
 }
 
 
 
-TEST_F(dec, DecTwoVectorsFirstElemIsInfinity_ReturnNotSuccessRCAndUnchangedFirstVector) {
-    double data2[5] = {-std::numeric_limits<double>::infinity() + 1, 2, 3, 4, 3};
-    IVector *secondVec = IVector::createVector(5, data2);
+TEST_F(dec, DecTwoVectorsOneElemIsNearInfinity_ReturnNotSuccessRCAndUnchangedVector) {
+    auto nearMinusInf = -std::numeric_limits<double>::max();
+    auto nearPlusInf = std::numeric_limits<double>::max();
 
-    RC rc = firstVec->dec(secondVec);
+    size_t idx = 0;
+    dataVec5[idx] = nearMinusInf;
+    dataAnotherVec5[idx] = nearPlusInf;
+    Vec5->setCord(idx, nearMinusInf);
+    AnotherVec5->setCord(idx, nearPlusInf);
+
+
+    RC rc = Vec5->dec(AnotherVec5);
     ASSERT_NE(rc, RC::SUCCESS);
 
-    ASSERT_FALSE(hasFirstVectorChanged());
-    delete secondVec;
-}
-
-TEST_F(dec, DecTwoVectorsLastElemIsInfinity_ReturnNotSuccessRCAndUnchangedFirstVector) {
-    double data2[5] = {1, 2, 3, 4, -std::numeric_limits<double>::infinity() + 1};
-    IVector *secondVec = IVector::createVector(5, data2);
-
-    RC rc = firstVec->dec(secondVec);
-    ASSERT_NE(rc, RC::SUCCESS);
-
-    ASSERT_FALSE(hasFirstVectorChanged());
-
-    delete secondVec;
+    ASSERT_FALSE(hasDefaultVec5Changed());
 }
 
 
@@ -222,8 +209,9 @@ TEST_F(dot, DotOfTwoCorrectVectors_SuccessResult) {
     IVector *vec2 = IVector::createVector(5, data2);
 
     double result = IVector::dot(vec1, vec2);
+    double correctResult = std::inner_product(std::begin(data1), std::end(data1), std::begin(data2), 0.0);
 
-    ASSERT_EQ(result, 45);
+    ASSERT_EQ(result, correctResult);
 
     delete vec1;
     delete vec2;
@@ -231,7 +219,7 @@ TEST_F(dot, DotOfTwoCorrectVectors_SuccessResult) {
 }
 
 TEST_F(dot, DotOfTwoNullptrVectors_ReturnQuiteNan) {
-    ASSERT_FALSE(std::isnan(IVector::dot(nullptr, nullptr)));
+    ASSERT_TRUE(std::isnan(IVector::dot(nullptr, nullptr)));
 }
 
 TEST_F(dot, DotOfTwoVectorsWithNonEqualDim_ReturnQuiteNan) {
@@ -243,7 +231,7 @@ TEST_F(dot, DotOfTwoVectorsWithNonEqualDim_ReturnQuiteNan) {
 
     double result = IVector::dot(vec1, vec2);
 
-    ASSERT_FALSE(std::isnan(result));
+    ASSERT_TRUE(std::isnan(result));
 
     delete vec1;
     delete vec2;
@@ -251,14 +239,14 @@ TEST_F(dot, DotOfTwoVectorsWithNonEqualDim_ReturnQuiteNan) {
 
 TEST_F(dot, DotOfTwoVectorsOneHasInfinityItem_ReturnQuiteNan) {
     double data2[5] = {1, 2, 3, 4, 5};
-    double data1[5] = {6, 8, std::numeric_limits<double>::infinity() - 1, 3, 3};
+    double data1[5] = {6, 8, std::numeric_limits<double>::max(), 3, 3};
 
     IVector *vec1 = IVector::createVector(5, data1);
     IVector *vec2 = IVector::createVector(5, data2);
 
     double result = IVector::dot(vec1, vec2);
 
-    ASSERT_FALSE(std::isnan(result));
+    ASSERT_TRUE(std::isnan(result));
 
     delete vec1;
     delete vec2;
@@ -266,14 +254,14 @@ TEST_F(dot, DotOfTwoVectorsOneHasInfinityItem_ReturnQuiteNan) {
 
 TEST_F(dot, DotOfTwoVectorsOneHasMinusInfinityItem_ReturnQuiteNan) {
     double data2[5] = {1, 2, 3, 4, 5};
-    double data1[5] = {6, 8, -std::numeric_limits<double>::infinity() + 1, 3, 3};
+    double data1[5] = {6, 8, -std::numeric_limits<double>::max(), 3, 3};
 
     IVector *vec1 = IVector::createVector(5, data1);
     IVector *vec2 = IVector::createVector(5, data2);
 
     double result = IVector::dot(vec1, vec2);
 
-    ASSERT_FALSE(std::isnan(result));
+    ASSERT_TRUE(std::isnan(result));
 
     delete vec1;
     delete vec2;
@@ -284,7 +272,8 @@ class norm : public ::testing::Test {
 public:
     virtual void SetUp()
     {
-
+        ILogger* logger = ILogger::createLogger("log1.txt");
+        IVector::setLogger(logger);
     }
 
     virtual void TearDown()
@@ -292,7 +281,20 @@ public:
     }
     double data[5] = {1, 2, 3, 4, 5};
     double dataRandom[5] = {1, -3, -5, 2, -100};
-    double dataInf[5] = {1, 2, std::numeric_limits<double>::infinity() - 1, -2, 4};
+    double dataInf[5] = {1, 2, std::numeric_limits<double>::max(), -2, std::numeric_limits<double>::max()};
+
+    int get_file_size(const char* filename)
+    {
+        FILE *p_file = nullptr;
+        p_file = fopen(filename,"rb");
+        if (p_file == nullptr)
+            return 0;
+
+        fseek(p_file,0,SEEK_END);
+        int size = ftell(p_file);
+        fclose(p_file);
+        return size;
+    }
 };
 
 TEST_F(norm, FirstNorm_ReturnSuccResult)
@@ -309,7 +311,7 @@ TEST_F(norm, SecondNorm_ReturnSuccResult)
 
     IVector *vec1 = IVector::createVector(5, data);
 
-    ASSERT_EQ(vec1->norm(IVector::NORM::SECOND), 55);
+    ASSERT_EQ(vec1->norm(IVector::NORM::SECOND), sqrt(55));
 
     delete vec1;
 }
@@ -344,18 +346,20 @@ TEST_F(norm, FirstNormOfVectorWithNegElem_ReturnSuccResult)
 
 TEST_F(norm, FirstNormOfVectorWithInfElem_ReturnNAN)
 {
-    IVector *vec1 = IVector::createVector(5, dataRandom);
+    IVector *vec1 = IVector::createVector(5, dataInf);
 
     ASSERT_TRUE(std::isnan(vec1->norm(IVector::NORM::FIRST)));
+    ASSERT_TRUE(get_file_size("..\\..\\cmake-build-debug\\gtest\\log1.txt") != 0);
 
     delete vec1;
 }
 
 TEST_F(norm, SecondNormOfVectorWithInfElem_ReturnNAN)
 {
-    IVector *vec1 = IVector::createVector(5, dataRandom);
+    IVector *vec1 = IVector::createVector(5, dataInf);
 
     ASSERT_TRUE(std::isnan(vec1->norm(IVector::NORM::SECOND)));
+    ASSERT_TRUE(get_file_size("..\\..\\cmake-build-debug\\gtest\\log1.txt") != 0);
 
     delete vec1;
 }
@@ -365,6 +369,7 @@ TEST_F(norm, AmountEnumInFunction_ReturnNAN)
     IVector *vec1 = IVector::createVector(5, dataRandom);
 
     ASSERT_TRUE(std::isnan(vec1->norm(IVector::NORM::AMOUNT)));
+    ASSERT_TRUE(get_file_size("..\\..\\cmake-build-debug\\gtest\\log1.txt") != 0);
 
     delete vec1;
 }
