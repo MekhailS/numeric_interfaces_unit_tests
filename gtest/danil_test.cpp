@@ -143,15 +143,15 @@ public:
 };
 
 TEST_F(dec, DecTwoVectorsSecondIsNullptr_ReturnNotSuccessRC) {
-    RC rc = firstVec->inc(nullptr);
+    RC rc = firstVec->dec(nullptr);
     ASSERT_NE(rc, RC::SUCCESS);
 }
 
-TEST_F(dec, DecTwoVectorsWithEqualDim_SuccInc) {
+TEST_F(dec, DecTwoVectorsWithEqualDim_SuccDec) {
     double data2[5] = {3, 9, 2, 8, 1};
     IVector *secondVec = IVector::createVector(5, data2);
 
-    RC rc = firstVec->inc(secondVec);
+    RC rc = firstVec->dec(secondVec);
     ASSERT_EQ(rc, RC::SUCCESS);
 
     double const *outputData = firstVec->getData();
@@ -169,7 +169,7 @@ TEST_F(dec, DecTwoVectorsWithNonEqualDim_ReturnNotSuccessRC) {
     double data2[4] = {1, 2, 3, 4};
     IVector *secondVec = IVector::createVector(4, data2);
 
-    RC rc = firstVec->inc(secondVec);
+    RC rc = firstVec->dec(secondVec);
     ASSERT_NE(rc, RC::SUCCESS);
 
     ASSERT_FALSE(hasFirstVectorChanged());
@@ -183,7 +183,7 @@ TEST_F(dec, DecTwoVectorsFirstElemIsInfinity_ReturnNotSuccessRCAndUnchangedFirst
     double data2[5] = {-std::numeric_limits<double>::infinity() + 1, 2, 3, 4, 3};
     IVector *secondVec = IVector::createVector(5, data2);
 
-    RC rc = firstVec->inc(secondVec);
+    RC rc = firstVec->dec(secondVec);
     ASSERT_NE(rc, RC::SUCCESS);
 
     ASSERT_FALSE(hasFirstVectorChanged());
@@ -194,7 +194,7 @@ TEST_F(dec, DecTwoVectorsLastElemIsInfinity_ReturnNotSuccessRCAndUnchangedFirstV
     double data2[5] = {1, 2, 3, 4, -std::numeric_limits<double>::infinity() + 1};
     IVector *secondVec = IVector::createVector(5, data2);
 
-    RC rc = firstVec->inc(secondVec);
+    RC rc = firstVec->dec(secondVec);
     ASSERT_NE(rc, RC::SUCCESS);
 
     ASSERT_FALSE(hasFirstVectorChanged());
